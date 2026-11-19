@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "taskflow.configMapName" . }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "config") | nindent 4 }}
+data:
+  # --- tasks-api ---
+  MAX_TITLE_LENGTH: {{ .Values.config.maxTitleLength | quote }}
+  FEATURE_STATS: {{ .Values.config.featureStats | quote }}
+  # --- analytics ---
+  SHOW_PRIORITY_BREAKDOWN: {{ .Values.config.showPriorityBreakdown | quote }}
+  TASKS_API_URL: {{ printf "http://%s:%v" (include "taskflow.componentName" (dict "root" . "component" "tasks-api")) .Values.tasksApi.service.port | quote }}
+  # --- база даних ---
+  DB_HOST: {{ include "taskflow.postgresHost" . | quote }}
+  DB_PORT: {{ .Values.postgres.service.port | quote }}
+  DB_NAME: {{ .Values.postgres.auth.database | quote }}
+  DB_USER: {{ .Values.postgres.auth.username | quote }}

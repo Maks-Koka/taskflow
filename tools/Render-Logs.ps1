@@ -1,4 +1,4 @@
-# Renders every captured command log (reports/logs/**/*.log) into a
+﻿# Renders every captured command log (reports/logs/**/*.log) into a
 # terminal-styled HTML page under reports/html, so the output of the real
 # commands can be screenshotted for the lab reports.
 #

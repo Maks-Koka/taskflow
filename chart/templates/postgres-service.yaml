@@ -1,0 +1,16 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taskflow.postgresHost" . }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "database") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "taskflow.componentSelectorLabels" (dict "root" . "component" "database") | nindent 4 }}
+  ports:
+    - name: postgres
+      port: {{ .Values.postgres.service.port }}
+      targetPort: postgres
+{{- end }}

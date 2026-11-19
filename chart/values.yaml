@@ -1,0 +1,147 @@
+# Значення за замовчуванням відповідають середовищу РОЗРОБКИ.
+# Для інших середовищ використовуйте values-dev.yaml / values-prod.yaml.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # Префікс реєстру. Порожній рядок = локальні образи в демоні minikube.
+  # Для GHCR: ghcr.io/<owner>
+  registry: ""
+  # Тег за замовчуванням для всіх сервісів TaskFlow.
+  # Конкретний сервіс може перевизначити його своїм <service>.image.tag.
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Нечутливі параметри застосунку -> ConfigMap
+config:
+  maxTitleLength: 160
+  featureStats: true
+  showPriorityBreakdown: true
+  banner: |
+    TaskFlow
+    Розгорнуто Helm-чартом taskflow
+    Конфігурацію підвантажено з ConfigMap
+
+# Чутливі параметри -> Secret.
+# У реальному проєкті сюди підставляють значення через --set або
+# зовнішній менеджер секретів; у репозиторії лишаються лише демонстраційні.
+secrets:
+  dbPassword: "taskflow_helm_dev_pw"
+  internalToken: "helm-dev-internal-token"
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  auth:
+    username: taskflow
+    database: taskflow
+  service:
+    port: 5432
+  persistence:
+    enabled: true
+    size: 1Gi
+    # storageClass: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+tasksApi:
+  replicaCount: 2
+  image:
+    repository: taskflow/tasks-api
+    tag: ""        # порожньо -> береться image.tag
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 15
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+
+analytics:
+  replicaCount: 2
+  image:
+    repository: taskflow/analytics
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 96Mi
+    limits:
+      cpu: 300m
+      memory: 384Mi
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 15
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+
+web:
+  replicaCount: 2
+  image:
+    repository: taskflow/web
+    tag: ""
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30080
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  probes:
+    liveness:
+      initialDelaySeconds: 5
+      periodSeconds: 15
+    readiness:
+      initialDelaySeconds: 3
+      periodSeconds: 5
+
+ingress:
+  enabled: false
+  className: nginx
+  host: taskflow.local
+  path: /
+  pathType: Prefix
+  annotations: {}
+
+# Хук, що перевіряє доступність бази перед оновленням релізу.
+hooks:
+  preUpgrade:
+    enabled: true
+
+# Під для `helm test`.
+tests:
+  enabled: true
+  image: curlimages/curl:8.11.1
+
+podSecurityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

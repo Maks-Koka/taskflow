@@ -1,4 +1,4 @@
-# Helper used while running the labs: executes a shell command, prints its
+﻿# Helper used while running the labs: executes a shell command, prints its
 # output and appends both the command line and its output to a log file under
 # reports/logs/<lab>/<name>.log. Those logs are rendered into terminal-styled
 # screenshots by tools/Render-Logs.ps1.

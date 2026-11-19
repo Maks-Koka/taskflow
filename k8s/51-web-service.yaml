@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: taskflow
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: taskflow
+spec:
+  # NodePort: застосунок доступний і всередині кластера (web:8080),
+  # і з хоста — через minikube service web -n taskflow.
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: taskflow
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30080

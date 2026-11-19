@@ -1,0 +1,22 @@
+# ЛР-1: структура проєкту та склад compose
+# 2026-11-19 10:33:54
+
+$ docker compose config --services
+postgres
+tasks-api
+analytics
+web
+
+$ cmd /c "dir /b services"
+analytics
+tasks-api
+web
+
+$ cmd /c "dir /b /s services\*Dockerfile"
+C:\Users\Lenovo\DevOps-labs\taskflow\services\analytics\Dockerfile
+C:\Users\Lenovo\DevOps-labs\taskflow\services\tasks-api\Dockerfile
+C:\Users\Lenovo\DevOps-labs\taskflow\services\web\Dockerfile
+
+$ docker compose logs --tail 6 tasks-api
+taskflow-tasks-api  | [tasks-api] version=1.0.0 listening on :3000
+

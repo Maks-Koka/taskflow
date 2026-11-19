@@ -1,0 +1,11 @@
+# Окремий ConfigMap для файлів: ключ banner.txt не є коректним іменем
+# змінної оточення, тому його не можна підключати через envFrom.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "taskflow.componentName" (dict "root" . "component" "files") }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "config") | nindent 4 }}
+data:
+  banner.txt: |
+{{ .Values.config.banner | indent 4 }}

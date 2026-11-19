@@ -1,0 +1,21 @@
+# ЛР-1: перевірка ендпоінтів усіх сервісів
+# 2026-11-19 10:30:17
+
+$ curl.exe -s http://localhost:3000/version
+{"service":"tasks-api","version":"1.0.0","featureStats":true,"maxTitleLength":120}
+
+$ curl.exe -s http://localhost:3000/ready
+{"status":"ready","service":"tasks-api","version":"1.0.0"}
+
+$ curl.exe -s http://localhost:8001/version
+{"service":"analytics","version":"1.0.0","tasks_api_url":"http://tasks-api:3000","show_priority_breakdown":true,"internal_token_configured":true}
+
+$ curl.exe -s http://localhost:8001/api/analytics
+{"total":6,"done":2,"pending":4,"completion_rate":0.33,"busiest_priority":"medium","priority_breakdown":{"high":3,"medium":2,"low":1}}
+
+$ curl.exe -s http://localhost:8090/version
+{"service":"web","version":"1.0.0"}
+
+$ curl.exe -s http://localhost:8090/api/tasks
+[{"id":4,"title":"Написати Dockerfile для кожного сервісу","done":true,"priority":1,"created_at":"2026-11-19T08:14:25.357Z"},{"id":5,"title":"Підняти стек через docker compose","done":true,"priority":1,"created_at":"2026-11-19T08:14:25.397Z"},{"id":6,"title":"Налаштувати CI у GitHub Actions","done":false,"priority":1,"created_at":"2026-11-19T08:14:25.403Z"},{"id":7,"title":"Описати маніфести Kubernetes","done":false,"priority":2,"created_at":"2026-11-19T08:14:25.407Z"},{"id":8,"title":"Запакувати застосунок у Helm-чарт","done":false,"priority":2,"created_at":"2026-11-19T08:14:25.413Z"},{"id":9,"title":"Підключити Argo CD і GitOps","done":false,"priority":3,"created_at":"2026-11-19T08:14:25.417Z"}]
+

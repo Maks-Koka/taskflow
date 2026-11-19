@@ -1,0 +1,49 @@
+{{- if .Values.hooks.preUpgrade.enabled }}
+# Завдання №9, варіант (b): хук pre-upgrade.
+# Перед кожним оновленням релізу перевіряє, що база даних відповідає.
+# Якщо Job падає, Helm зупиняє оновлення і реліз лишається на старій ревізії.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "taskflow.componentName" (dict "root" . "component" "pre-upgrade-db-check") }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "hook") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 120
+  template:
+    metadata:
+      labels:
+        {{- include "taskflow.componentLabels" (dict "root" . "component" "hook") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-check
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          command:
+            - sh
+            - -c
+            - |
+              echo "pre-upgrade: перевіряю доступність бази {{ include "taskflow.postgresHost" . }}"
+              for i in $(seq 1 30); do
+                if pg_isready -h {{ include "taskflow.postgresHost" . }} -p {{ .Values.postgres.service.port }} -U {{ .Values.postgres.auth.username }}; then
+                  echo "pre-upgrade: база відповідає, оновлення дозволено"
+                  exit 0
+                fi
+                echo "pre-upgrade: спроба $i/30, база ще не готова"
+                sleep 2
+              done
+              echo "pre-upgrade: база недоступна, оновлення скасовано"
+              exit 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+{{- end }}

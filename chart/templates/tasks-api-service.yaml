@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taskflow.componentName" (dict "root" . "component" "tasks-api") }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "tasks-api") | nindent 4 }}
+spec:
+  type: {{ .Values.tasksApi.service.type }}
+  selector:
+    {{- include "taskflow.componentSelectorLabels" (dict "root" . "component" "tasks-api") | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.tasksApi.service.port }}
+      targetPort: http

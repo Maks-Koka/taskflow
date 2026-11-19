@@ -1,0 +1,28 @@
+# Нечутлива конфігурація застосунку.
+# Частина значень приїжджає в контейнери як змінні оточення,
+# файл banner.txt монтується у під як том.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taskflow-config
+  namespace: taskflow
+  labels:
+    app.kubernetes.io/part-of: taskflow
+    app.kubernetes.io/component: config
+data:
+  # --- tasks-api ---
+  MAX_TITLE_LENGTH: "160"
+  FEATURE_STATS: "true"
+  # --- analytics ---
+  TASKS_API_URL: "http://tasks-api:3000"
+  SHOW_PRIORITY_BREAKDOWN: "true"
+  # --- спільне ---
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "taskflow"
+  DB_USER: "taskflow"
+  # --- файл, що монтується у під ---
+  banner.txt: |
+    TaskFlow
+    Середовище: minikube / namespace taskflow
+    Конфігурацію підвантажено з ConfigMap taskflow-config

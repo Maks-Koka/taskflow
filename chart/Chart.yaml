@@ -1,0 +1,19 @@
+apiVersion: v2
+name: taskflow
+description: TaskFlow - мікросервісний трекер завдань (tasks-api, analytics, web, PostgreSQL)
+type: application
+
+# version    — версія самого чарта: змінюється, коли змінюються шаблони або
+#              структура values, навіть якщо код застосунку лишився тим самим.
+# appVersion — версія застосунку, який цей чарт розгортає: збігається з тегом
+#              образів TaskFlow за замовчуванням.
+version: 0.2.0
+appVersion: "1.0.0"
+
+keywords:
+  - taskflow
+  - devops
+  - microservices
+home: https://github.com/
+maintainers:
+  - name: Maksim Koka

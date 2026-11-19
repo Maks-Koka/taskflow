@@ -1,0 +1,46 @@
+# Середовище розробки: мінімум ресурсів, одна репліка на сервіс,
+# Ingress вимкнений (доступ через NodePort), стабільний тег 1.0.0.
+
+image:
+  tag: "1.0.0"
+
+tasksApi:
+  replicaCount: 1
+  resources:
+    requests: { cpu: 25m, memory: 48Mi }
+    limits:   { cpu: 200m, memory: 192Mi }
+
+analytics:
+  replicaCount: 1
+  resources:
+    requests: { cpu: 25m, memory: 64Mi }
+    limits:   { cpu: 200m, memory: 256Mi }
+
+web:
+  replicaCount: 1
+  service:
+    type: NodePort
+    nodePort: 30080
+  resources:
+    requests: { cpu: 10m, memory: 24Mi }
+    limits:   { cpu: 100m, memory: 96Mi }
+
+postgres:
+  persistence:
+    enabled: true
+    size: 1Gi
+
+config:
+  maxTitleLength: 160
+  featureStats: true
+  showPriorityBreakdown: true
+  banner: |
+    TaskFlow - середовище DEV
+    Один под на сервіс, Ingress вимкнено
+
+ingress:
+  enabled: false
+
+secrets:
+  dbPassword: "taskflow_dev_pw"
+  internalToken: "dev-internal-token"

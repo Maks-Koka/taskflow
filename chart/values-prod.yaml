@@ -1,0 +1,57 @@
+# Умовне продакшн-середовище: більше реплік, більші ліміти,
+# новіший тег образу, увімкнений Ingress.
+#
+# Пароль і токен тут НЕ зберігаються: їх передають під час встановлення, напр.
+#   helm upgrade --install taskflow ./chart -f chart/values-prod.yaml \
+#     --set secrets.dbPassword=$DB_PASSWORD \
+#     --set secrets.internalToken=$INTERNAL_TOKEN
+
+image:
+  tag: "1.1.0"
+
+tasksApi:
+  replicaCount: 3
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 1000m, memory: 512Mi }
+
+analytics:
+  replicaCount: 3
+  resources:
+    requests: { cpu: 100m, memory: 192Mi }
+    limits:   { cpu: 1000m, memory: 768Mi }
+
+web:
+  replicaCount: 3
+  service:
+    type: ClusterIP
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+
+postgres:
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests: { cpu: 200m, memory: 512Mi }
+    limits:   { cpu: 2000m, memory: 2Gi }
+
+config:
+  maxTitleLength: 200
+  featureStats: true
+  showPriorityBreakdown: true
+  banner: |
+    TaskFlow - середовище PROD
+    Три поди на сервіс, доступ через Ingress
+
+ingress:
+  enabled: true
+  className: nginx
+  host: taskflow.local
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 1m
+
+secrets:
+  dbPassword: "CHANGE_ME_AT_INSTALL"
+  internalToken: "CHANGE_ME_AT_INSTALL"

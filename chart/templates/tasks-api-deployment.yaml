@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "taskflow.componentName" (dict "root" . "component" "tasks-api") }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "tasks-api") | nindent 4 }}
+spec:
+  replicas: {{ .Values.tasksApi.replicaCount }}
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "taskflow.componentSelectorLabels" (dict "root" . "component" "tasks-api") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "taskflow.componentLabels" (dict "root" . "component" "tasks-api") | nindent 8 }}
+      annotations:
+        # Зміна ConfigMap або Secret перезапускає поди.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: tasks-api
+          image: {{ include "taskflow.image" (dict "root" . "svc" .Values.tasksApi) | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: APP_VERSION
+              value: {{ default .Values.image.tag .Values.tasksApi.image.tag | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "taskflow.configMapName" . }}
+            - secretRef:
+                name: {{ include "taskflow.secretName" . }}
+          volumeMounts:
+            - name: config-files
+              mountPath: /etc/taskflow
+              readOnly: true
+          resources:
+            {{- toYaml .Values.tasksApi.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.tasksApi.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.tasksApi.probes.liveness.periodSeconds }}
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: {{ .Values.tasksApi.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.tasksApi.probes.readiness.periodSeconds }}
+            timeoutSeconds: 3
+            failureThreshold: 6
+      volumes:
+        - name: config-files
+          configMap:
+            name: {{ include "taskflow.componentName" (dict "root" . "component" "files") }}
+            items:
+              - key: banner.txt
+                path: banner.txt
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

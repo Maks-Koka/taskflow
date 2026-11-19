@@ -1,0 +1,67 @@
+# ЛР-1: лінтери та тести всіх сервісів
+# 2026-11-19 10:31:15
+
+# tasks-api — ESLint (блокуючий, --max-warnings=0)
+
+$ cmd /c "cd services\tasks-api && npm run lint 2>&1"
+
+> taskflow-tasks-api@1.0.0 lint
+> eslint . --max-warnings=0
+
+# tasks-api — юніт-тести (Jest)
+
+$ cmd /c "cd services\tasks-api && npm run test:unit 2>&1"
+
+> taskflow-tasks-api@1.0.0 test:unit
+> jest tests/unit --runInBand
+
+PASS tests/unit/health.test.js
+PASS tests/unit/validation.test.js
+
+Test Suites: 2 passed, 2 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        1.086 s, estimated 2 s
+Ran all test suites matching /tests\\unit/i.
+
+# tasks-api — інтеграційні тести проти реального PostgreSQL
+
+$ cmd /c "cd services\tasks-api && set DB_HOST=127.0.0.1&& set DB_PORT=55432&& set DB_USER=taskflow&& set DB_PASSWORD=taskflow_dev_pw&& set DB_NAME=taskflow&& npm run test:integration 2>&1"
+
+> taskflow-tasks-api@1.0.0 test:integration
+> jest tests/integration --runInBand
+
+PASS tests/integration/tasks.test.js
+  GET /ready
+    √ reports ready when the database is reachable (27 ms)
+  tasks CRUD
+    √ starts from an empty collection (16 ms)
+    √ creates a task and returns it with an id (30 ms)
+    √ lists created tasks in id order (22 ms)
+    √ fetches a single task by id (17 ms)
+    √ returns 404 for a missing task (11 ms)
+    √ returns 400 for a malformed id (9 ms)
+    √ updates an existing task (15 ms)
+    √ deletes a task (18 ms)
+    √ rejects an invalid payload without writing to the database (20 ms)
+  GET /api/tasks/summary
+    √ aggregates the stored tasks (23 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        1.181 s, estimated 2 s
+Ran all test suites matching /tests\\integration/i.
+
+# analytics — ruff і pytest у стадії test контейнерного образу
+
+$ cmd /c "docker run --rm taskflow/analytics:test sh -c ""ruff check . && pytest -q"" 2>&1"
+All checks passed!
+...................                                                      [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/site-packages/starlette/testclient.py:40
+  /usr/local/lib/python3.12/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+

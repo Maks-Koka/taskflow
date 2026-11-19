@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>lab1 / 04-endpoints</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #0b0e13;
+    font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  .frame {
+    margin: 18px;
+    border: 1px solid #2a323d;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #11151c;
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #1b2129;
+    border-bottom: 1px solid #2a323d;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .r { background: #ff5f57; } .y { background: #febc2e; } .g { background: #28c840; }
+  .title {
+    margin-left: 10px;
+    color: #9aa7b8;
+    font-size: 12.5px;
+    letter-spacing: .3px;
+  }
+  pre {
+    margin: 0;
+    padding: 16px 18px;
+    color: #d7dee9;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .cmd { color: #6ec1ff; font-weight: 600; }
+  .ok  { color: #3ecf8e; }
+  .err { color: #ff7b72; }
+  .dim { color: #7c8899; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="title">lab1 / 04-endpoints</span>
+    </div>
+    <pre><span class="cmd"># ЛР-1: перевірка ендпоінтів усіх сервісів</span>
+<span class="cmd"># 2026-11-19 10:30:17</span>
+
+<span class="cmd">$ curl.exe -s http://localhost:3000/version</span>
+{"service":"tasks-api","version":"1.0.0","featureStats":true,"maxTitleLength":120}
+
+<span class="cmd">$ curl.exe -s http://localhost:3000/ready</span>
+{"status":"ready","service":"tasks-api","version":"1.0.0"}
+
+<span class="cmd">$ curl.exe -s http://localhost:8001/version</span>
+{"service":"analytics","version":"1.0.0","tasks_api_url":"http://tasks-api:3000","show_priority_breakdown":true,"internal_token_configured":true}
+
+<span class="cmd">$ curl.exe -s http://localhost:8001/api/analytics</span>
+<span class="ok">{"total":6,"done":2,"pending":4,"completion_rate":0.33,"busiest_priority":"medium","priority_breakdown":{"high":3,"medium":2,"low":1}}</span>
+
+<span class="cmd">$ curl.exe -s http://localhost:8090/version</span>
+{"service":"web","version":"1.0.0"}
+
+<span class="cmd">$ curl.exe -s http://localhost:8090/api/tasks</span>
+<span class="ok">[{"id":4,"title":"Написати Dockerfile для кожного сервісу","done":true,"priority":1,"created_at":"2026-11-19T08:14:25.357Z"},{"id":5,"title":"Підняти стек через docker compose","done":true,"priority":1,"created_at":"2026-11-19T08:14:25.397Z"},{"id":6,"title":"Налаштувати CI у GitHub Actions","done":false,"priority":1,"created_at":"2026-11-19T08:14:25.403Z"},{"id":7,"title":"Описати маніфести Kubernetes","done":false,"priority":2,"created_at":"2026-11-19T08:14:25.407Z"},{"id":8,"title":"Запакувати застосунок у Helm-чарт","done":false,"priority":2,"created_at":"2026-11-19T08:14:25.413Z"},{"id":9,"title":"Підключити Argo CD і GitOps","done":false,"priority":3,"created_at":"2026-11-19T08:14:25.417Z"}]</span>
+
+</pre>
+  </div>
+</body>
+</html>

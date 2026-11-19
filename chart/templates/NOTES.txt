@@ -1,0 +1,35 @@
+TaskFlow {{ .Chart.AppVersion }} встановлено як реліз "{{ .Release.Name }}" у namespace "{{ .Release.Namespace }}".
+
+Версія чарта : {{ .Chart.Version }}
+Образи       : тег {{ .Values.image.tag }}{{ if .Values.image.registry }} з реєстру {{ .Values.image.registry }}{{ else }} (локальні образи вузла){{ end }}
+Репліки      : tasks-api={{ .Values.tasksApi.replicaCount }}, analytics={{ .Values.analytics.replicaCount }}, web={{ .Values.web.replicaCount }}
+
+1. Дочекайтесь готовності подів:
+
+   kubectl rollout status deployment/{{ include "taskflow.componentName" (dict "root" . "component" "web") }} -n {{ .Release.Namespace }}
+
+2. Відкрийте застосунок:
+
+{{- if .Values.ingress.enabled }}
+
+   Через Ingress (додайте в hosts рядок "<minikube ip>  {{ .Values.ingress.host }}"):
+
+     minikube ip
+     http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+{{- end }}
+{{- if eq .Values.web.service.type "NodePort" }}
+
+   Через NodePort:
+
+     minikube service {{ include "taskflow.componentName" (dict "root" . "component" "web") }} -n {{ .Release.Namespace }}
+{{- end }}
+
+   Або прокидання порту:
+
+     kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "taskflow.componentName" (dict "root" . "component" "web") }} 8090:{{ .Values.web.service.port }}
+     # далі http://localhost:8090
+
+3. Перевірте реліз:
+
+   helm test {{ .Release.Name }} -n {{ .Release.Namespace }}
+   helm status {{ .Release.Name }} -n {{ .Release.Namespace }}

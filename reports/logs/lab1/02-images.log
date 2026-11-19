@@ -1,10 +1,13 @@
-# ЛР-1: зібрані образи
-# 2026-11-19 10:16:06
+# ЛР-1: зібрані образи (дві версії кожного сервісу)
+# 2026-11-19 10:33:53
 
 $ docker images --filter "reference=taskflow/*" --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}"
 REPOSITORY           TAG       SIZE      CREATED
-taskflow/web         1.0.0     73.6MB    2 minutes ago
-taskflow/tasks-api   1.0.0     208MB     5 minutes ago
-taskflow/analytics   1.0.0     253MB     8 minutes ago
-taskflow/analytics   test      303MB     10 minutes ago
+taskflow/analytics   test      303MB     2 minutes ago
+taskflow/web         1.1.0     73.6MB    9 minutes ago
+taskflow/analytics   1.1.0     253MB     9 minutes ago
+taskflow/tasks-api   1.1.0     208MB     11 minutes ago
+taskflow/web         1.0.0     73.6MB    20 minutes ago
+taskflow/tasks-api   1.0.0     208MB     23 minutes ago
+taskflow/analytics   1.0.0     253MB     26 minutes ago
 

@@ -1,0 +1,50 @@
+{{- if .Values.tests.enabled }}
+# Завдання №9, варіант (b): тест релізу.
+# Запускається командою `helm test <release> -n <namespace>`.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "taskflow.componentName" (dict "root" . "component" "test-endpoints") }}
+  labels:
+    {{- include "taskflow.componentLabels" (dict "root" . "component" "test") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  restartPolicy: Never
+  containers:
+    - name: curl
+      image: {{ .Values.tests.image | quote }}
+      command:
+        - sh
+        - -c
+        - |
+          set -e
+          WEB={{ include "taskflow.componentName" (dict "root" . "component" "web") }}:{{ .Values.web.service.port }}
+          API={{ include "taskflow.componentName" (dict "root" . "component" "tasks-api") }}:{{ .Values.tasksApi.service.port }}
+          ANALYTICS={{ include "taskflow.componentName" (dict "root" . "component" "analytics") }}:{{ .Values.analytics.service.port }}
+
+          echo "1/5 web /health"
+          curl -fsS "http://$WEB/health"; echo
+
+          echo "2/5 tasks-api /version"
+          curl -fsS "http://$API/version"; echo
+
+          echo "3/5 tasks-api /ready (перевіряє базу)"
+          curl -fsS "http://$API/ready"; echo
+
+          echo "4/5 analytics /api/analytics"
+          curl -fsS "http://$ANALYTICS/api/analytics"; echo
+
+          echo "5/5 web проксує до аналітики"
+          curl -fsS "http://$WEB/api/analytics"; echo
+
+          echo "УСІ ПЕРЕВІРКИ ПРОЙДЕНО"
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi
+{{- end }}
