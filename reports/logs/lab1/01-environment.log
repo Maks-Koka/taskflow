@@ -1,0 +1,18 @@
+# ЛР-1: середовище
+# 2026-11-19 10:16:04
+
+$ docker --version
+Docker version 29.8.0, build 88096ef
+
+$ docker compose version
+Docker Compose version v5.5.1
+
+$ docker info --format "Server {{.ServerVersion}} / {{.OSType}} / {{.Driver}}"
+Server 29.8.0 / linux / overlayfs
+
+$ node --version
+v24.21.0
+
+$ git --version
+git version 2.56.0.windows.2
+

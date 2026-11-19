@@ -1,0 +1,63 @@
+# nginx entrypoint for TaskFlow.
+# ${VAR} placeholders are substituted at container start by the official
+# nginx envsubst entrypoint, so the same image works in docker compose,
+# in Kubernetes and in Argo CD without being rebuilt.
+
+server {
+    listen       8080;
+    listen       [::]:8080;
+    server_name  _;
+
+    root  /usr/share/nginx/html;
+    index index.html;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json;
+
+    # --- probes -----------------------------------------------------------
+    location = /health {
+        access_log off;
+        default_type application/json;
+        return 200 '{"status":"ok","service":"web","version":"${APP_VERSION}"}';
+    }
+
+    location = /version {
+        default_type application/json;
+        return 200 '{"service":"web","version":"${APP_VERSION}"}';
+    }
+
+    # --- version of the backing services, proxied for the UI badges -------
+    location = /api/version/tasks {
+        proxy_pass http://${TASKS_API_UPSTREAM}/version;
+        proxy_set_header Host $host;
+    }
+
+    location = /api/version/analytics {
+        proxy_pass http://${ANALYTICS_UPSTREAM}/version;
+        proxy_set_header Host $host;
+    }
+
+    # --- analytics service ------------------------------------------------
+    location = /api/analytics {
+        proxy_pass http://${ANALYTICS_UPSTREAM}/api/analytics;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 10s;
+    }
+
+    # --- tasks service ----------------------------------------------------
+    location /api/tasks {
+        proxy_pass http://${TASKS_API_UPSTREAM};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 10s;
+    }
+
+    # --- static files -----------------------------------------------------
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-store";
+    }
+}

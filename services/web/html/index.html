@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskFlow</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1>TaskFlow</h1>
+      </div>
+      <div class="versions" id="versions">
+        <span class="badge" id="badge-web">web …</span>
+        <span class="badge" id="badge-api">tasks-api …</span>
+        <span class="badge" id="badge-analytics">analytics …</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>Нове завдання</h2>
+        <form id="task-form" class="task-form">
+          <input
+            id="title"
+            name="title"
+            type="text"
+            placeholder="Що треба зробити?"
+            autocomplete="off"
+            required
+          />
+          <select id="priority" name="priority">
+            <option value="1">Високий</option>
+            <option value="2" selected>Середній</option>
+            <option value="3">Низький</option>
+          </select>
+          <button type="submit">Додати</button>
+        </form>
+        <p class="error" id="form-error" hidden></p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Завдання</h2>
+          <button class="ghost" id="refresh">Оновити</button>
+        </div>
+        <ul class="tasks" id="tasks">
+          <li class="empty">Завантаження…</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Аналітика</h2>
+        <div class="stats" id="stats">
+          <div class="stat"><span class="num" id="stat-total">—</span><span class="lbl">усього</span></div>
+          <div class="stat"><span class="num" id="stat-done">—</span><span class="lbl">виконано</span></div>
+          <div class="stat"><span class="num" id="stat-pending">—</span><span class="lbl">у роботі</span></div>
+          <div class="stat"><span class="num" id="stat-rate">—</span><span class="lbl">прогрес</span></div>
+        </div>
+        <p class="muted" id="analytics-note"></p>
+      </section>
+    </main>
+
+    <footer>
+      <span>TaskFlow · лабораторні з технологій DevOps</span>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

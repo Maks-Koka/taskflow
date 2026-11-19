@@ -1,0 +1,10 @@
+# ЛР-1: стан стеку docker compose
+# 2026-11-19 10:16:06
+
+$ docker compose ps --format "table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+SERVICE     IMAGE                                                                     STATUS                   PORTS
+analytics   sha256:71502b77e883d9dfe4967d6433d626d7aacb3c3d8562f705dd7f80f9858812f5   Up 5 minutes (healthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp
+postgres    postgres:16-alpine                                                        Up 3 minutes (healthy)   0.0.0.0:55432->5432/tcp, [::]:55432->5432/tcp
+tasks-api   sha256:6953c5da4ca4abf4595d9d612ab35fd590a249033e8f71b0419f61a670cb4d22   Up 5 minutes (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+web         taskflow/web:1.0.0                                                        Up 2 minutes (healthy)   0.0.0.0:8090->8080/tcp, [::]:8090->8080/tcp
+
