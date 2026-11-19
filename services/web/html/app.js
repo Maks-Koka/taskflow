@@ -88,6 +88,26 @@ async function loadTasks() {
   }
 }
 
+function renderBreakdown(breakdown) {
+  const box = el("breakdown");
+  if (!breakdown) {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  const max = Math.max(1, ...Object.values(breakdown));
+  const rows = [
+    ["high", "bar-high", "val-high"],
+    ["medium", "bar-medium", "val-medium"],
+    ["low", "bar-low", "val-low"],
+  ];
+  for (const [key, barId, valId] of rows) {
+    const value = breakdown[key] || 0;
+    el(barId).style.width = `${Math.round((value / max) * 100)}%`;
+    el(valId).textContent = value;
+  }
+}
+
 async function loadAnalytics() {
   const note = el("analytics-note");
   try {
@@ -96,6 +116,7 @@ async function loadAnalytics() {
     el("stat-done").textContent = data.done;
     el("stat-pending").textContent = data.pending;
     el("stat-rate").textContent = `${Math.round(data.completion_rate * 100)}%`;
+    renderBreakdown(data.priority_breakdown);
     note.textContent = data.busiest_priority
       ? `Найбільше незавершених завдань з пріоритетом: ${data.busiest_priority}`
       : "Незавершених завдань немає.";
@@ -103,6 +124,7 @@ async function loadAnalytics() {
     for (const id of ["stat-total", "stat-done", "stat-pending", "stat-rate"]) {
       el(id).textContent = "—";
     }
+    renderBreakdown(null);
     note.textContent = `Сервіс аналітики недоступний (${err.message})`;
   }
 }

@@ -268,3 +268,45 @@ footer {
   font-size: 12px;
   text-align: center;
 }
+
+/* --- розбивка за пріоритетами (додано у версії 1.1.0) --- */
+.breakdown {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 78px 1fr 36px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.bar-fill.p1 { background: var(--danger); }
+.bar-fill.p2 { background: var(--warn); }
+.bar-fill.p3 { background: var(--ok); }
+
+.bar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
