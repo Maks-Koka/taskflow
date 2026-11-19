@@ -167,13 +167,16 @@ jobs:
       - name: Lint — HTMLHint
         run: npm run lint:html
 
-      # Build/Test: шаблон має підставитись і nginx має прийняти конфігурацію
+      # Build/Test: шаблон має підставитись і nginx має прийняти конфігурацію.
+      # Апстріми вказані як 127.0.0.1, бо `nginx -t` резолвить імена хостів
+      # одразу, а сервісів tasks-api / analytics у раннері не існує.
+      # Структура конфігурації від цього не змінюється.
       - name: Test — конфігурація nginx валідна
         run: |
           docker run --rm \
             -e APP_VERSION=ci \
-            -e TASKS_API_UPSTREAM=tasks-api:3000 \
-            -e ANALYTICS_UPSTREAM=analytics:8000 \
+            -e TASKS_API_UPSTREAM=127.0.0.1:3000 \
+            -e ANALYTICS_UPSTREAM=127.0.0.1:8000 \
             -v "$PWD/templates:/etc/nginx/templates:ro" \
             nginx:1.27-alpine \
             sh -c 'envsubst "\$APP_VERSION \$TASKS_API_UPSTREAM \$ANALYTICS_UPSTREAM" \
