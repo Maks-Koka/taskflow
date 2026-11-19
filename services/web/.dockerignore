@@ -2,3 +2,8 @@
 .gitignore
 Dockerfile
 .dockerignore
+node_modules
+package-lock.json
+eslint.config.mjs
+package.json
+.htmlhintrc

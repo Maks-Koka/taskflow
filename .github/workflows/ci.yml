@@ -150,19 +150,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 20 (з кешем npm)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+          cache-dependency-path: services/web/package-lock.json
 
-      # Статичний аналіз — блокуючий крок
-      - name: Lint — HTMLHint + ESLint для фронтенду
-        run: |
-          npx --yes htmlhint@1.1.4 html/index.html
-          npx --yes eslint@9.17.0 --no-config-lookup \
-            --rule '{"no-undef":"error","no-unused-vars":"error"}' \
-            --parser-options '{"ecmaVersion":2022,"sourceType":"script"}' \
-            html/app.js
+      - name: Build — npm ci
+        run: npm ci
+
+      # Статичний аналіз — блокуючі кроки
+      - name: Lint — ESLint (браузерний конфіг)
+        run: npm run lint
+
+      - name: Lint — HTMLHint
+        run: npm run lint:html
 
       # Build/Test: шаблон має підставитись і nginx має прийняти конфігурацію
       - name: Test — конфігурація nginx валідна
